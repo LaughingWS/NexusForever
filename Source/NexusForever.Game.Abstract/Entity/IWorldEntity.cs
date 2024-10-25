@@ -88,6 +88,11 @@ namespace NexusForever.Game.Abstract.Entity
         /// </summary>
         void Initialise(EntityModel model);
 
+        /// <summary>
+        /// Initialise <see cref="IWorldEntity"/> from an existing entity template.
+        /// </summary>
+        void Initialise(IEntityTemplate template);
+
         ServerEntityCreate BuildCreatePacket(bool initialCommands);
 
         /// <summary>

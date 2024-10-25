@@ -57,6 +57,16 @@ namespace NexusForever.Game.Entity
         }
 
         /// <summary>
+        /// Create a new <see cref="IStatValue"/> from an existing entity template.
+        /// </summary>
+        public StatValue(IEntityTemplateStat template)
+        {
+            Stat  = template.Stat;
+            Type  = EntityManager.Instance.GetStatAttribute(Stat).Type;
+            Value = template.Value;
+        }
+
+        /// <summary>
         /// Create a new <see cref="IStatValue"/> from supplied <see cref="Stat"/> and value.
         /// </summary>
         public StatValue(Stat stat, uint value)

@@ -1,9 +1,7 @@
 ﻿using NexusForever.Game.Abstract.Entity;
-using NexusForever.Game.Static.Reputation;
 using NexusForever.Script.Template;
 using NexusForever.Script.Template.Event;
 using NexusForever.Script.Template.Filter;
-using NexusForever.Shared;
 
 namespace NexusForever.Script.Instance.Expedition.EvilFromTheEther.Script
 {
@@ -16,16 +14,16 @@ namespace NexusForever.Script.Instance.Expedition.EvilFromTheEther.Script
 
         private readonly IScriptEventFactory eventFactory;
         private readonly IScriptEventManager eventManager;
-        private readonly IFactory<IEntitySummonTemplate> templateFactory;
+        private readonly IEntityTemplateManager entityTemplateManager;
 
         public KatjaZarkhovEntityScript(
             IScriptEventFactory eventFactory,
             IScriptEventManager eventManager,
-            IFactory<IEntitySummonTemplate> templateFactory)
+            IEntityTemplateManager entityTemplateManager)
         {
-            this.eventFactory = eventFactory;
-            this.eventManager = eventManager;
-            this.templateFactory = templateFactory;
+            this.eventFactory          = eventFactory;
+            this.eventManager          = eventManager;
+            this.entityTemplateManager = entityTemplateManager;
         }
 
         #endregion
@@ -51,10 +49,7 @@ namespace NexusForever.Script.Instance.Expedition.EvilFromTheEther.Script
         /// </summary>
         public void OnDeath()
         {
-            IEntitySummonTemplate template = templateFactory.Resolve();
-            template.CreatureId    = 71821;
-            template.DisplayInfoId = 26389;
-            template.Faction       = (Faction)219;
+            IEntityTemplate template = entityTemplateManager.GetEntityTemplate(71821);
 
             var @event = eventFactory.CreateEvent<IEntitySummonEvent<INonPlayerEntity>>();
             @event.Initialise(entity.SummonFactory, template, entity.Position, entity.Rotation);

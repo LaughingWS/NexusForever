@@ -18,11 +18,14 @@ namespace NexusForever.Game.Entity
         #region Dependency Injection
 
         private readonly IEntityFactory entityFactory;
+        private readonly IEntityTemplateManager entityTemplateManager;
 
         public EntitySummonFactory(
-            IEntityFactory entityFactory)
+            IEntityFactory entityFactory,
+            IEntityTemplateManager entityTemplateManager)
         {
-            this.entityFactory = entityFactory;
+            this.entityFactory         = entityFactory;
+            this.entityTemplateManager = entityTemplateManager;
         }
 
         #endregion
@@ -41,13 +44,24 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Summons an entity of <typeparamref name="T"/> at the specified position and rotation and optional callback.
         /// </summary>
-        public void Summon<T>(IEntitySummonTemplate template, Vector3 position, Vector3 rotation, OnAddDelegate add = null) where T : IWorldEntity
+        public void Summon<T>(IEntityTemplate template, Vector3 position, Vector3 rotation, OnAddDelegate add = null) where T : IWorldEntity
         {
             var entity = entityFactory.CreateEntity<T>();
-            entity.Initialise(template.CreatureId);
-            entity.DisplayInfo  = template.DisplayInfoId;
-            entity.Faction1     = template.Faction;
-            entity.Faction2     = template.Faction;
+            Summon(template, entity, position, rotation, add);
+        }
+
+        /// <summary>
+        /// Summons an entity at the specified position and rotation and optional callback.
+        /// </summary>
+        public void Summon(IEntityTemplate template, Vector3 position, Vector3 rotation, OnAddDelegate add = null)
+        {
+            var entity = entityFactory.CreateWorldEntity(template.Type);
+            Summon(template, entity, position, rotation, add);
+        }
+
+        private void Summon(IEntityTemplate template, IWorldEntity entity, Vector3 position, Vector3 rotation, OnAddDelegate add = null)
+        {
+            entity.Initialise(template);
             entity.Rotation     = rotation;
             entity.SummonerGuid = owner.Guid;
 

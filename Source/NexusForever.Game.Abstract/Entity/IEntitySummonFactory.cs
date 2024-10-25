@@ -18,7 +18,12 @@ namespace NexusForever.Game.Abstract.Entity
         /// <summary>
         /// Summons an entity of <typeparamref name="T"/> at the specified position and rotation and optional callback.
         /// </summary>
-        void Summon<T>(IEntitySummonTemplate template, Vector3 position, Vector3 rotation, OnAddDelegate add = null) where T : IWorldEntity;
+        void Summon<T>(IEntityTemplate template, Vector3 position, Vector3 rotation, OnAddDelegate add = null) where T : IWorldEntity;
+
+        /// <summary>
+        /// Summons an entity at the specified position and rotation and optional callback.
+        /// </summary>
+        void Summon(IEntityTemplate template, Vector3 position, Vector3 rotation, OnAddDelegate add = null);
 
         /// <summary>
         /// Stop tracking a summon.

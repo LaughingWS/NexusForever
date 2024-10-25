@@ -6,6 +6,6 @@ namespace NexusForever.Script.Template.Event
 {
     public interface IEntitySummonEvent<T> : IScriptEvent where T : IWorldEntity
     {
-        void Initialise(IEntitySummonFactory factory, IEntitySummonTemplate template, Vector3 position, Vector3 rotation, OnAddDelegate add = null);
+        void Initialise(IEntitySummonFactory factory, IEntityTemplate template, Vector3 position, Vector3 rotation, OnAddDelegate add = null);
     }
 }

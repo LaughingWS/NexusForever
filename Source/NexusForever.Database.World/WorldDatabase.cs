@@ -137,5 +137,15 @@ namespace NexusForever.Database.World
                 .AsNoTracking()
                 .ToImmutableList();
         }
+
+        public ImmutableList<EntityTemplateModel> GetEntityTemplates()
+        {
+            using var context = new WorldContext(config);
+            return context.EntityTemplate
+                .Include(e => e.EntityProperty)
+                .Include(e => e.EntityStat)
+                .AsNoTracking()
+                .ToImmutableList();
+        }
     }
 }

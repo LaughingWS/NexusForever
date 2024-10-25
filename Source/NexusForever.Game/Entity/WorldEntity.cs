@@ -278,6 +278,32 @@ namespace NexusForever.Game.Entity
         }
 
         /// <summary>
+        /// Initialise <see cref="IWorldEntity"/> from an existing entity template.
+        /// </summary>
+        public void Initialise(IEntityTemplate template)
+        {
+            CreatureId  = template.CreatureId;
+            DisplayInfo = template.DisplayInfoId;
+            OutfitInfo  = template.OutfitInfoId;
+            Faction1    = template.Faction1;
+            Faction2    = template.Faction2;
+
+            foreach (IEntityTemplateStat templateStat in template.Stats)
+                stats.Add(templateStat.Stat, new StatValue(templateStat));
+
+            CalculateDefaultProperties();
+
+            foreach (IEntityTemplateProperty templateProperty in template.Properties)
+                SetBaseProperty(templateProperty.Property, templateProperty.Value);
+
+            // TODO: handle this better
+            Health = MaxHealth;
+            Shield = MaxShieldCapacity;
+
+            InitialiseScriptCollection(null);
+        }
+
+        /// <summary>
         /// Initialise <see cref="IScriptCollection"/> for <see cref="IWorldEntity"/>.
         /// </summary>
         protected override void InitialiseScriptCollection(List<string> names)

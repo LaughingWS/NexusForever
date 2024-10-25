@@ -4,6 +4,7 @@ using NexusForever.Database.Configuration.Model;
 using NexusForever.Database.World.Model;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Entity.Movement.Spline;
+using NexusForever.Game.Static.Reputation;
 
 namespace NexusForever.Database.World
 {
@@ -16,6 +17,9 @@ namespace NexusForever.Database.World
         public DbSet<EntityScriptModel> EntityScript { get; set; }
         public DbSet<EntitySplineModel> EntitySpline { get; set; }
         public DbSet<EntityStatModel> EntityStat { get; set; }
+        public DbSet<EntityTemplateModel> EntityTemplate { get; set; }
+        public DbSet<EntityTemplatePropertyModel> EntityTemplateProperty { get; set; }
+        public DbSet<EntityTemplateStatModel> EntityTemplateStat { get; set; }
         public DbSet<EntityVendorModel> EntityVendor { get; set; }
         public DbSet<EntityVendorCategoryModel> EntityVendorCategory { get; set; }
         public DbSet<EntityVendorItemModel> EntityVendorItem { get; set; }
@@ -316,6 +320,88 @@ namespace NexusForever.Database.World
                     .WithMany(p => p.EntityStat)
                     .HasForeignKey(d => d.Id)
                     .HasConstraintName("FK__entity_stats_stat_id_entity_id");
+            });
+
+            modelBuilder.Entity<EntityTemplateModel>(entity =>
+            {
+                entity.ToTable("entity_template");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(10) unsigned");
+
+                entity.Property(e => e.Type)
+                    .HasColumnName("type")
+                    .HasColumnType("tinyint(3) unsigned")
+                    .HasConversion<EnumToNumberConverter<EntityType, byte>>();
+
+                entity.Property(e => e.DisplayInfo)
+                    .HasColumnName("displayInfo")
+                    .HasColumnType("int(10) unsigned");
+
+                entity.Property(e => e.OutfitInfo)
+                    .HasColumnName("outfitInfo")
+                    .HasColumnType("smallint(5) unsigned");
+
+                entity.Property(e => e.Faction1)
+                    .HasColumnName("faction1")
+                    .HasColumnType("smallint(5) unsigned")
+                    .HasConversion<EnumToNumberConverter<Faction, ushort>>();
+
+                entity.Property(e => e.Faction2)
+                    .HasColumnName("faction2")
+                    .HasConversion<EnumToNumberConverter<Faction, ushort>>();
+            });
+
+            modelBuilder.Entity<EntityTemplatePropertyModel>(entity =>
+            {
+                entity.ToTable("entity_template_property");
+
+                entity.HasKey(e => new { e.Id, e.Property })
+                    .HasName("PRIMARY");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(10) unsigned");
+
+                entity.Property(e => e.Property)
+                    .HasColumnName("property")
+                    .HasColumnType("tinyint(3) unsigned")
+                    .HasConversion<EnumToNumberConverter<Property, byte>>();
+
+                entity.Property(e => e.Value)
+                    .HasColumnName("value")
+                    .HasColumnType("float");
+
+                entity.HasOne(d => d.Entity)
+                    .WithMany(p => p.EntityProperty)
+                    .HasForeignKey(d => d.Id)
+                    .HasConstraintName("FK__entity_template_property_id__entity_template_id");
+            });
+
+            modelBuilder.Entity<EntityTemplateStatModel>(entity =>
+            {
+                entity.HasKey(e => new { e.Id, e.Stat })
+                    .HasName("PRIMARY");
+
+                entity.ToTable("entity_template_stat");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(10) unsigned");
+
+                entity.Property(e => e.Stat)
+                    .HasColumnName("stat")
+                    .HasColumnType("tinyint(3) unsigned");
+
+                entity.Property(e => e.Value)
+                    .HasColumnName("value")
+                    .HasColumnType("float");
+
+                entity.HasOne(d => d.Entity)
+                    .WithMany(p => p.EntityStat)
+                    .HasForeignKey(d => d.Id)
+                    .HasConstraintName("FK__entity_template_stat_id__entity_template_id");
             });
 
             modelBuilder.Entity<EntityVendorModel>(entity =>

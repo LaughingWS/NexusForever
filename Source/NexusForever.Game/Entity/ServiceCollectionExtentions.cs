@@ -62,7 +62,10 @@ namespace NexusForever.Game.Entity
             sc.AddSingletonLegacy<IPlayerManager, PlayerManager>();
 
             sc.AddTransient<IEntitySummonFactory, EntitySummonFactory>();
-            sc.AddTransientFactory<IEntitySummonTemplate, EntitySummonTemplate>();
+            sc.AddTransientFactory<IEntityTemplate, EntityTemplate>();
+            sc.AddTransientFactory<IEntityTemplateProperty, EntityTemplateProperty>();
+            sc.AddTransientFactory<IEntityTemplateStat, EntityTemplateStat>();
+            sc.AddSingleton<IEntityTemplateManager, EntityTemplateManager>();
         }
     }
 }

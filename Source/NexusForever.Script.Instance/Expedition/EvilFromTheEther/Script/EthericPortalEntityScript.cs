@@ -3,7 +3,6 @@ using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Map;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Static.Event;
-using NexusForever.Game.Static.Reputation;
 using NexusForever.Game.Static.Spell;
 using NexusForever.Script.Template;
 using NexusForever.Script.Template.Event;
@@ -21,18 +20,18 @@ namespace NexusForever.Script.Instance.Expedition.EvilFromTheEther.Script
 
         private readonly IScriptEventFactory eventFactory;
         private readonly IScriptEventManager eventManager;
-        private readonly IFactory<IEntitySummonTemplate> templateFactory;
+        private readonly IEntityTemplateManager entityTemplateManager;
         private readonly IFactory<ISpellParameters> spellParameterFactory;
 
         public EthericPortalEntityScript(
             IScriptEventFactory eventFactory,
             IScriptEventManager eventManager,
-            IFactory<IEntitySummonTemplate> templateFactory,
+            IEntityTemplateManager entityTemplateManager,
             IFactory<ISpellParameters> spellParameterFactory)
         {
-            this.eventFactory = eventFactory;
-            this.eventManager = eventManager;
-            this.templateFactory = templateFactory;
+            this.eventFactory          = eventFactory;
+            this.eventManager          = eventManager;
+            this.entityTemplateManager = entityTemplateManager;
             this.spellParameterFactory = spellParameterFactory;
         }
 
@@ -59,10 +58,7 @@ namespace NexusForever.Script.Instance.Expedition.EvilFromTheEther.Script
 
         protected void CreateTetheredOrganism(TimeSpan time, float angle)
         {
-            IEntitySummonTemplate template = templateFactory.Resolve();
-            template.CreatureId    = 71133;
-            template.DisplayInfoId = 28700;
-            template.Faction       = (Faction)218;
+            IEntityTemplate template = entityTemplateManager.GetEntityTemplate(71133);
 
             float entityAngle = -entity.Rotation.X;
             entityAngle -= MathF.PI / 2;

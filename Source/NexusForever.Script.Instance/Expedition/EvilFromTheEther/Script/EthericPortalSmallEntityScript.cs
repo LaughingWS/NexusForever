@@ -15,9 +15,9 @@ namespace NexusForever.Script.Instance.Expedition.EvilFromTheEther.Script
         public EthericPortalSmallEntityScript(
             IScriptEventFactory eventFactory,
             IScriptEventManager eventManager,
-            IFactory<IEntitySummonTemplate> templateFactory,
+            IEntityTemplateManager entityTemplateManager,
             IFactory<ISpellParameters> spellParameterFactory)
-            : base(eventFactory, eventManager, templateFactory, spellParameterFactory)
+            : base(eventFactory, eventManager, entityTemplateManager, spellParameterFactory)
         {
         }
 
