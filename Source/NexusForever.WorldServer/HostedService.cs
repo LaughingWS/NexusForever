@@ -15,11 +15,10 @@ using NexusForever.Game.Character;
 using NexusForever.Game.Cinematic;
 using NexusForever.Game.Customisation;
 using NexusForever.Game.Entity;
-using NexusForever.Game.Event;
+using NexusForever.Game.Group;
 using NexusForever.Game.Guild;
 using NexusForever.Game.Housing;
 using NexusForever.Game.Map;
-using NexusForever.Game.Matching.Match;
 using NexusForever.Game.Prerequisite;
 using NexusForever.Game.Quest;
 using NexusForever.Game.RBAC;
@@ -164,9 +163,12 @@ namespace NexusForever.WorldServer
                 GlobalGuildManager.Instance.Update(lastTick);
                 GlobalResidenceManager.Instance.Update(lastTick); // must be after guild update
                 GlobalChatManager.Instance.Update(lastTick);
+
                 loginQueueManager.Update(lastTick);
                 matchingManager.Update(lastTick);
                 matchManager.Update(lastTick);
+                GroupManager.Instance.Update(lastTick);
+
                 scriptManager.Update(lastTick);
 
                 ShutdownManager.Instance.Update(lastTick);
