@@ -2,6 +2,7 @@
 using NexusForever.Shared.GameTable;
 using NexusForever.Shared.Network.Message;
 using NexusForever.WorldServer.Game.Account.Static;
+using NexusForever.WorldServer.Game.PathContent;
 using NexusForever.WorldServer.Game.Static;
 using NexusForever.WorldServer.Network.Message.Model;
 
@@ -73,6 +74,18 @@ namespace NexusForever.WorldServer.Network.Message.Handler
 
             session.Player.PathManager.UnlockPath(clientPathUnlock.Path);
             session.AccountCurrencyManager.CurrencySubtractAmount(AccountCurrencyType.ServiceToken, unlockCost);
+        }
+
+        [MessageHandler(GameMessageOpcode.ClientSettlerBuildImprovement)]
+        public static void HandleSettlerBuildImprovement(WorldSession session, ClientSettlerBuildImprovement buildImprovement)
+        {
+            GlobalPathContentManager.Instance.HandleSettlerBuildImprovement(session.Player, buildImprovement);
+        }
+
+        [MessageHandler(GameMessageOpcode.ClientExplorerPlaceSignal)]
+        public static void HandleExplorerPlaceSignal(WorldSession session, ClientExplorerPlaceSignal placeSignal)
+        {
+            GlobalPathContentManager.Instance.HandleExplorerPlaceSignal(session.Player, placeSignal);
         }
     }
 }

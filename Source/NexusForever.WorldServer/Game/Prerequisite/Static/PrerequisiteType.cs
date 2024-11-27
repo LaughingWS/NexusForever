@@ -21,6 +21,7 @@
         /// </summary>
         InCombat            = 28,
         TargetIsPlayer      = 39,
+        QuestObjective      = 43,
         /// <summary>
         /// Checks for whether or not the Player has an AMP.
         /// </summary>
@@ -60,6 +61,7 @@
         /// </summary>
         Unknown195          = 195,
         SpellBaseId         = 214,
+        Amp                 = 227,
         Plane               = 232,
         Faction2            = 243,
         AccountItemClaimed  = 246,

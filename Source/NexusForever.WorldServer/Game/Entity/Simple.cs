@@ -17,6 +17,8 @@ namespace NexusForever.WorldServer.Game.Entity
     [DatabaseEntity(EntityType.Simple)]
     public class Simple : UnitEntity
     {
+        public uint ImprovementGroupId { get; private set; }
+
         public Action<Simple> afterAddToMap;
 
         public Simple()
@@ -62,6 +64,52 @@ namespace NexusForever.WorldServer.Game.Entity
                 DisplayInfo = displayGroupEntry.Creature2DisplayInfoId;
 
             CreateFlags |= EntityCreateFlag.SpawnAnimation;
+        }
+        public Simple(Creature2Entry entry) 
+            : base(EntityType.Simple)
+        {
+            CreatureId = entry.Id;
+            Faction1 = (Faction)entry.FactionId;
+            Faction2 = (Faction)entry.FactionId;
+
+            Creature2DisplayGroupEntryEntry displayGroupEntry = GameTableManager.Instance.Creature2DisplayGroupEntry.Entries.FirstOrDefault(i => i.Creature2DisplayGroupId == entry.Creature2DisplayGroupId);
+            if (displayGroupEntry != null)
+                DisplayInfo = displayGroupEntry.Creature2DisplayInfoId;
+
+            Creature2OutfitGroupEntryEntry outfitGroupEntry = GameTableManager.Instance.Creature2OutfitGroupEntry.Entries.FirstOrDefault(i => i.Creature2OutfitGroupId == entry.Creature2OutfitGroupId);
+            if (outfitGroupEntry != null)
+                OutfitInfo = (ushort)outfitGroupEntry.Creature2OutfitInfoId;
+
+            Properties.Add(Property.BaseHealth, new PropertyValue(Property.BaseHealth, 100f, 109f));
+            stats.Add(Stat.Health, new StatValue(Stat.Health, 100u));
+            stats.Add(Stat.Level, new StatValue(Stat.Level, 1u));
+
+            CreateFlags |= EntityCreateFlag.SpawnAnimation;
+        }
+
+        /*public Simple(Creature2Entry creature)
+            : base (EntityType.Simple)
+        {
+            if (creature == null)
+                throw new ArgumentNullException(nameof(creature));
+
+            CreatureId = creature.Id;
+            Faction1 = (Faction)creature.FactionId;
+            Faction2 = (Faction)creature.FactionId;
+        }*/
+
+        public Simple(uint creatureId, uint groupId, uint displayInfo)
+            : base (EntityType.Simple)
+        {
+            CreatureId = creatureId;
+            ImprovementGroupId = groupId;
+
+            Creature2Entry entry = GameTableManager.Instance.Creature2.GetEntry(creatureId);
+            Creature2DisplayGroupEntryEntry displayGroupEntry = GameTableManager.Instance.Creature2DisplayGroupEntry.GetEntry(entry.Creature2DisplayGroupId);
+            DisplayInfo = displayInfo > 0 ? displayInfo : displayGroupEntry.Creature2DisplayInfoId;
+
+            Faction1 = (Faction)entry.FactionId;
+            Faction2 = (Faction)entry.FactionId;
         }
 
         public override void Initialise(EntityModel model)

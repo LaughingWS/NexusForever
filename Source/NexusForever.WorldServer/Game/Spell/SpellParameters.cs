@@ -15,6 +15,7 @@ namespace NexusForever.WorldServer.Game.Spell
         public Position TargetPosition { get; set; }
         public uint PositionalUnitId { get; set; }
         public ushort TaxiNode { get; set; }
+        public uint CCDurationOverride { get; set; }
         public uint ThresholdValue { get; set; }
         public bool IsProxy { get; set; }
         public bool ForceCancelOnly { get; set; }

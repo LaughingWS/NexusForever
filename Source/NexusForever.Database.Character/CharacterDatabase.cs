@@ -149,6 +149,8 @@ namespace NexusForever.Database.Character
                 .Include(c => c.Achievement)
                 .Include(c => c.Contact)
                 .Include(c => c.TradeskillMaterials)
+                .Include(c => c.PathEpisode)
+                //.Include(c => c.PathMission)
                 .Include(c => c.Reputation)
                 .Include(c => c.RewardTrack)
                     .ThenInclude(c => c.Milestone)
