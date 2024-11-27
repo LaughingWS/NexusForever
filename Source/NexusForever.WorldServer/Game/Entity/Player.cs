@@ -1713,5 +1713,13 @@ namespace NexusForever.WorldServer.Game.Entity
                 PvpFlags = PvPFlags
             }, true);
         }
+
+        /// <summary>
+        /// Process Falling Damage for this <see cref="Player"/>
+        /// </summary>
+        public void TakeFallingDamage(float healthPercent)
+        {
+            // TODO: Take HP damage
+        }
     }
 }

@@ -209,12 +209,41 @@ namespace NexusForever.WorldServer.Game.Spell
             // TODO: There are other Riding Skills which need to be added when the player has them as known effects.
             player.CastSpell(52539, new SpellParameters
             {
-                ParentSpellInfo        = parameters.SpellInfo,
-                RootSpellInfo          = parameters.RootSpellInfo,
+                ParentSpellInfo = parameters.SpellInfo,
+                RootSpellInfo = parameters.RootSpellInfo,
                 UserInitiatedSpellCast = false,
-                IsProxy                = true
+                IsProxy = true
             });
         }
+
+        [SpellEffectHandler(SpellEffectType.SummonCreature)]
+        private void HandleEffectSummonCreature(UnitEntity target, SpellTargetInfo.SpellTargetEffectInfo info)
+        {
+            // TODO: Investigate flags in dataBits01
+
+            var creatureEntry = GameTableManager.Instance.Creature2.GetEntry(info.Entry.DataBits00);
+
+            for (int i = 0; i < info.Entry.DataBits02; i++)
+            {
+                WorldEntity entity;
+                if ((EntityType)creatureEntry.CreationTypeEnum == EntityType.Simple)
+                    entity = new Simple(creatureEntry, 0, 0);
+                else if ((EntityType)creatureEntry.CreationTypeEnum == EntityType.NonPlayer)
+                    entity = new NonPlayer(creatureEntry, 0, 0);
+                else
+                    entity = EntityManager.Instance.NewEntity((EntityType)creatureEntry.CreationTypeEnum) ?? EntityManager.Instance.NewEntity(EntityType.Simple);
+                entity.Initialise(creatureEntry);
+
+                var position = new MapPosition
+                {
+                    Position = new Vector3(target.Position.X, target.Position.Y, target.Position.Z).GetRandomPoint2DRangeDirection(info.Entry.DataBits03, info.Entry.DataBits04, info.Entry.DataBits05, target.Rotation.X)
+                };
+
+                if (target.Map.CanEnter(entity, position))
+                    target.Map.EnqueueAdd(entity, position);
+            }
+        }
+
 
         [SpellEffectHandler(SpellEffectType.Teleport)]
         private void HandleEffectTeleport(UnitEntity target, SpellTargetInfo.SpellTargetEffectInfo info)
@@ -233,7 +262,8 @@ namespace NexusForever.WorldServer.Game.Spell
                 Location bindPointLocation = AssetManager.Instance.GetBindPoint(player.BindPoint);
                 Vector3 offset = new Vector3(2f, 1.5f, 2f); // TODO: Should use new Vector3(0f, 1.5f, 0f); when map props are being used
 
-                if (player.CanTeleport()) {
+                if (player.CanTeleport())
+                {
                     player.Rotation = bindPointLocation.Rotation;
                     player.TeleportTo(bindPointLocation.World, Vector3.Add(bindPointLocation.Position, offset));
                 }
@@ -260,7 +290,8 @@ namespace NexusForever.WorldServer.Game.Spell
                 }
             }
 
-            if (player.CanTeleport()) {
+            if (player.CanTeleport())
+            {
                 player.Rotation = new Quaternion(locationEntry.Facing0, locationEntry.Facing1, locationEntry.Facing2, locationEntry.Facing3).ToEulerDegrees();
                 player.TeleportTo((ushort)locationEntry.WorldId, locationEntry.Position0, locationEntry.Position1, locationEntry.Position2);
             }
@@ -446,7 +477,7 @@ namespace NexusForever.WorldServer.Game.Spell
         private void HandleEffectForcedMove(UnitEntity target, SpellTargetInfo.SpellTargetEffectInfo info)
         {
         }
-        
+
         [SpellEffectHandler(SpellEffectType.VitalModifier)]
         private void HandleEffectVitalModifier(UnitEntity target, SpellTargetInfo.SpellTargetEffectInfo info)
         {

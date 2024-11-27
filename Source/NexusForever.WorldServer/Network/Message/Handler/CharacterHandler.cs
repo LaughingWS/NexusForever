@@ -762,5 +762,11 @@ namespace NexusForever.WorldServer.Network.Message.Handler
 
             session.Player.SetPvpMode(pvpModeSet.PvpMode);
         }
+
+        [MessageHandler(GameMessageOpcode.ClientFallingDamage)]
+        public static void HandleFallingDamage(WorldSession session, ClientFallingDamage fallingDamage)
+        {
+            session.Player.TakeFallingDamage(fallingDamage.HealthPercent);
+        }
     }
 }
