@@ -45,8 +45,14 @@ namespace NexusForever.Game.Abstract.Entity
         uint MaxHealth { get; set; }
         uint Shield { get; set; }
         uint MaxShieldCapacity { get; set; }
+
+        float Dash { get; set; }
+        float Resource1 { get; set; }
+        float Resource3 { get; set; }
+        float Resource4 { get; set; }
+        float InterruptArmor { get; set; }
+
         uint Level { get; set; }
-        uint InterruptArmor { get; set; }
         bool Sheathed { get; set; }
 
         StandState StandState { get; set; }
@@ -183,6 +189,21 @@ namespace NexusForever.Game.Abstract.Entity
         /// Return the <see cref="uint"/> value of the supplied <see cref="Stat"/> as an <see cref="Enum"/>.
         /// </summary>
         T? GetStatEnum<T>(Stat stat) where T : struct, Enum;
+
+        /// <summary>
+        /// Get the current value of the <see cref="Stat"/> mapped to <see cref="Vital"/>.
+        /// </summary>
+        float GetVitalValue(Vital vital);
+
+        /// <summary>
+        /// Set the stat value for the provided <see cref="Vital"/>.
+        /// </summary>
+        void SetVital(Vital vital, float value);
+
+        /// <summary>
+        /// Modify the current stat value for the <see cref="Vital"/>.
+        /// </summary>
+        void ModifyVital(Vital vital, float value);
 
         /// <summary>
         /// Enqueue broadcast of <see cref="IWritable"/> to all visible <see cref="IPlayer"/>'s in range.

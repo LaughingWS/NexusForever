@@ -12,7 +12,7 @@ namespace NexusForever.Game.Spell
             sc.AddGameSpellEffect();
 
             sc.AddSingletonLegacy<IGlobalSpellManager, GlobalSpellManager>();
-
+            sc.AddSingletonLegacy<ISpellLookupManager, SpellLookupManager>();
             sc.AddTransientFactory<ISpellParameters, SpellParameters>();
         }
     }

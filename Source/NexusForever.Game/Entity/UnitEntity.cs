@@ -246,7 +246,7 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Handles regeneration of Stat Values. Used to provide a hook into the Update method, for future implementation.
         /// </summary>
-        private void HandleStatUpdate(double lastTick)
+        protected virtual void HandleStatUpdate(double lastTick)
         {
             if (!IsAlive || InCombat)
                 return;
