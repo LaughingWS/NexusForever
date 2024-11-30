@@ -111,7 +111,7 @@ namespace NexusForever.Game.Abstract.Entity
         /// <remarks>
         /// If the <see cref="DamageType"/> is <see cref="DamageType.Heal"/> amount is added to current health otherwise subtracted.
         /// </remarks>
-        void ModifyHealth(uint amount, DamageType type, IUnitEntity source);
+        void ModifyHealth(uint amount, DamageType? type, IUnitEntity source);
 
         /// <summary>
         /// Set target to supplied target guid.

@@ -456,10 +456,10 @@ namespace NexusForever.Game.Entity
         /// <remarks>
         /// If the <see cref="DamageType"/> is <see cref="DamageType.Heal"/> amount is added to current health otherwise subtracted.
         /// </remarks>
-        public virtual void ModifyHealth(uint amount, DamageType type, IUnitEntity source)
+        public virtual void ModifyHealth(uint amount, DamageType? type, IUnitEntity source)
         {
             long newHealth = Health;
-            if (type == DamageType.Heal)
+            if (type is DamageType.Heal or null)
                 newHealth += amount;
             else
                 newHealth -= amount;
@@ -469,10 +469,10 @@ namespace NexusForever.Game.Entity
             scriptCollection?.Invoke<IUnitScript>(s => s.OnHealthChange(source, amount, type));
 
             if (Health == 0)
-                OnDeath();
+                OnDeath(source);
         }
 
-        protected virtual void OnDeath()
+        protected virtual void OnDeath(IUnitEntity killer)
         {
             DeathState = EntityDeathState.JustDied;
 
@@ -482,7 +482,7 @@ namespace NexusForever.Game.Entity
                     spell.CancelCast(CastResult.CasterCannotBeDead);
             }
 
-            GenerateRewards();
+            GenerateRewards(killer);
             // TODO: schedule respawn
 
             ThreatManager.ClearThreatList();
@@ -493,16 +493,20 @@ namespace NexusForever.Game.Entity
             deathState = EntityDeathState.Dead;
         }
 
-        private void GenerateRewards()
+        private void GenerateRewards(IUnitEntity killer)
         {
             foreach (uint targetGroupId in AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureId))
                 Map.PublicEventManager.UpdateObjective(PublicEventObjectiveType.KillTargetGroup, targetGroupId, 1);
 
+            // reward public event kill stat to player that landed the killing blow
+            if (killer is IPlayer killerPlayer)
+                Map.PublicEventManager.UpdateStat(killerPlayer, PublicEventStat.Kills, 1);
+
             foreach (IHostileEntity hostile in ThreatManager)
             {
                 IUnitEntity entity = GetVisible<IUnitEntity>(hostile.HatedUnitId);
-                if (entity is IPlayer player)
-                    RewardKiller(player);
+                if (entity is IPlayer hostilePlayer)
+                    RewardKiller(hostilePlayer);
             }
         }
 

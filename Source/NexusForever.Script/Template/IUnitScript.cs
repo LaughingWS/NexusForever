@@ -30,7 +30,7 @@ namespace NexusForever.Script.Template
         /// <summary>
         /// Invoked when health is changed by source <see cref="IUnitEntity"/>.
         /// </summary>
-        void OnHealthChange(IUnitEntity source, uint amount, DamageType type)
+        void OnHealthChange(IUnitEntity source, uint amount, DamageType? type)
         {
         }
 

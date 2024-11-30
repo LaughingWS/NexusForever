@@ -156,9 +156,9 @@ namespace NexusForever.Script.Main.AI
         /// <summary>
         /// Invoked when health is changed by source <see cref="IUnitEntity"/>.
         /// </summary>
-        public void OnHealthChange(IUnitEntity source, uint amount, DamageType type)
+        public void OnHealthChange(IUnitEntity source, uint amount, DamageType? type)
         {
-            if (type == DamageType.Heal)
+            if (type is DamageType.Heal or null)
                 return;
 
             AggroEntity(source);

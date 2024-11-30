@@ -2,6 +2,7 @@
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Abstract.Spell.Effect;
+using NexusForever.Game.Static.Event;
 using NexusForever.Game.Static.Spell;
 using NexusForever.Shared;
 
@@ -33,8 +34,13 @@ namespace NexusForever.Game.Spell.Effect.Handler
             IDamageCalculator damageCalculator = damageCalculatorFactory.Resolve();
             damageCalculator.CalculateDamage(spell.Caster, target, spell, info);
 
-            if (info.Damage != null)
-                target.TakeDamage(spell.Caster, info.Damage);
+            if (info.Damage == null)
+                return;
+
+            target.TakeDamage(spell.Caster, info.Damage);
+
+            if (spell.Caster is IPlayer player)
+                player.Map.PublicEventManager.UpdateStat(player, PublicEventStat.Damage, info.Damage.AdjustedDamage);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace NexusForever.Game.Event
         /// </summary>
         public void UpdateStat(Static.Event.PublicEventStat stat, uint value)
         {
-            stats[stat] = value;
+            stats[stat] += value;
         }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace NexusForever.Game.Event
         /// </summary>
         public void UpdateCustomStat(uint index, uint value)
         {
-            customStats[index] = value;
+            customStats[index] += value;
         }
 
         public NetworkPublicEventStats Build()

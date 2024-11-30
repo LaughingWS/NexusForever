@@ -29,6 +29,7 @@ using NexusForever.Game.Reputation;
 using NexusForever.Game.Social;
 using NexusForever.Game.Static;
 using NexusForever.Game.Static.Entity;
+using NexusForever.Game.Static.Event;
 using NexusForever.Game.Static.Guild;
 using NexusForever.Game.Static.Quest;
 using NexusForever.Game.Static.RBAC;
@@ -573,7 +574,7 @@ namespace NexusForever.Game.Entity
             SendPacketsAfterAddToMap();
 
             if (!IsAlive)
-                OnDeath();
+                OnDeath(null);
 
             if (PreviousMap == null)
                 OnLogin();
@@ -1396,9 +1397,14 @@ namespace NexusForever.Game.Entity
         /// <remarks>
         /// If the <see cref="DamageType"/> is <see cref="DamageType.Heal"/> amount is added to current health otherwise subtracted.
         /// </remarks>
-        public override void ModifyHealth(uint amount, DamageType type, IUnitEntity source)
+        public override void ModifyHealth(uint amount, DamageType? type, IUnitEntity source)
         {
             base.ModifyHealth(amount, type, source);
+
+            if (type == DamageType.Heal)
+                Map.PublicEventManager.UpdateStat(this, PublicEventStat.HealingReceived, amount);
+            else if (type != null)
+                Map.PublicEventManager.UpdateStat(this, PublicEventStat.DamageReceived, amount);
 
             Session.EnqueueMessageEncrypted(new ServerPlayerHealthUpdate
             {
@@ -1416,14 +1422,16 @@ namespace NexusForever.Game.Entity
                 OnResurrection(source);
         }
 
-        protected override void OnDeath()
+        protected override void OnDeath(IUnitEntity killer)
         {
-            base.OnDeath();
+            base.OnDeath(killer);
 
             Dismount();
             RemoveControlUnit();
 
             UpdateRangeChecks();
+
+            Map.PublicEventManager.UpdateStat(this, PublicEventStat.Deaths, 1);
 
             // TODO: Replace with DelayEvent (of 2 seconds) with map updates.
 
