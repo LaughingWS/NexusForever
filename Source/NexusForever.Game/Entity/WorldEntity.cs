@@ -335,7 +335,7 @@ namespace NexusForever.Game.Entity
             List<string> scriptNames = model.EntityScript
                 .Select(e => e.ScriptName)
                 .ToList();
-            InitialiseScriptCollection(scriptNames);
+            InitialiseScriptCollection(scriptNames.Count > 0 ? scriptNames : null);
         }
 
         /// <summary>
