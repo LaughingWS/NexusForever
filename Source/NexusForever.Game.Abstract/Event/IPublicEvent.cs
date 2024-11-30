@@ -11,6 +11,7 @@ namespace NexusForever.Game.Abstract.Event
         Guid Guid { get; }
         uint Id { get; }
         bool IsFinalised { get; }
+        bool HasFinished { get; }
         bool IsBusy { get; set; }
         uint Phase { get; }
 

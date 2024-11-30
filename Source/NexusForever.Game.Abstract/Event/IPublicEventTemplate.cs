@@ -21,5 +21,10 @@ namespace NexusForever.Game.Abstract.Event
         /// This determines if live stats should be periodically sent to members of the event.
         /// </remarks>
         bool HasLiveStats();
+
+        /// <summary>
+        /// Returns if the public event should be disposed when the event completes.
+        /// </summary>
+        bool InstantFinalise();
     }
 }

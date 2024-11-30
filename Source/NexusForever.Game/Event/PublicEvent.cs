@@ -22,6 +22,7 @@ namespace NexusForever.Game.Event
         public Guid Guid { get; } = Guid.NewGuid();
         public uint Id => template.Entry.Id;
         public bool IsFinalised { get; private set; }
+        public bool HasFinished { get; private set; }
         public uint Phase { get; private set; }
         public bool IsBusy { get; set; }
 
@@ -65,6 +66,8 @@ namespace NexusForever.Game.Event
 
         public void Dispose()
         {
+            entityFactory.RemoveEntities();
+
             if (scriptCollection != null)
                 ScriptManager.Instance.Unload(scriptCollection);
 
@@ -76,7 +79,7 @@ namespace NexusForever.Game.Event
         /// </summary>
         public void Update(double lastTick)
         {
-            if (IsFinalised)
+            if (HasFinished)
                 return;
 
             if (liveStatsTimer != null)
@@ -436,7 +439,7 @@ namespace NexusForever.Game.Event
         /// </summary>
         public void Finish(Static.Event.PublicEventTeam? winnerTeam)
         {
-            if (IsFinalised)
+            if (HasFinished)
                 return;
 
             var teamStats = teams.Values
@@ -472,15 +475,14 @@ namespace NexusForever.Game.Event
             foreach (ulong characterId in toRemove)
                 RemoveCharacter(characterId);
 
-            entityFactory.RemoveEntities();
-
             IPublicEventTeam winner = null;
             if (winnerTeam.HasValue)
                 winner = GetTeam(winnerTeam.Value);
 
             Map.OnPublicEventFinish(this, winner);
 
-            IsFinalised = true;
+            IsFinalised = template.InstantFinalise();
+            HasFinished = true;
 
             log.LogTrace($"Public event {Guid} has finished.");
         }
