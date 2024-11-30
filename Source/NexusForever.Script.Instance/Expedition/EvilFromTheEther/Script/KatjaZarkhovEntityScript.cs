@@ -1,29 +1,51 @@
 ﻿using NexusForever.Game.Abstract.Entity;
+using NexusForever.Game.Abstract.Spell;
+using NexusForever.Game.Static.Spell;
+using NexusForever.GameTable;
+using NexusForever.Script.Main.AI;
 using NexusForever.Script.Template;
 using NexusForever.Script.Template.Event;
 using NexusForever.Script.Template.Filter;
+using NexusForever.Shared;
 
 namespace NexusForever.Script.Instance.Expedition.EvilFromTheEther.Script
 {
-    [ScriptFilterCreatureId(71037)]
-    public class KatjaZarkhovEntityScript : INonPlayerScript, IOwnedScript<INonPlayerEntity>
+    [ScriptFilterScriptName("KatjaZarkhovEntityScript")]
+    public class KatjaZarkhovEntityScript : CombatAI
     {
-        private INonPlayerEntity entity;
+        private enum Spell
+        {
+            ClawedFury     = 56037,
+            SlicingWind    = 56358,
+            PouncingSlice  = 56390,
+            TurnedRavenous = 81706,
+            RavenousBurst  = 82855
+        }
+
+        private bool hasEnraged;
 
         #region Dependency Injection
 
         private readonly IScriptEventFactory eventFactory;
         private readonly IScriptEventManager eventManager;
+        private readonly IEntitySummonFactory entitySummonFactory;
         private readonly IEntityTemplateManager entityTemplateManager;
 
         public KatjaZarkhovEntityScript(
+            IFactory<ISpellParameters> spellParametersFactory,
+            IGameTableManager gameTableManager,
             IScriptEventFactory eventFactory,
             IScriptEventManager eventManager,
+            IEntitySummonFactory entitySummonFactory,
             IEntityTemplateManager entityTemplateManager)
+            : base(spellParametersFactory, gameTableManager)
         {
             this.eventFactory          = eventFactory;
-            this.eventManager          = eventManager;
+            this.entitySummonFactory   = entitySummonFactory;
             this.entityTemplateManager = entityTemplateManager;
+
+            this.eventManager          = eventManager;
+            this.eventManager.OnScriptEvent += OnScriptEvent;
         }
 
         #endregion
@@ -31,29 +53,103 @@ namespace NexusForever.Script.Instance.Expedition.EvilFromTheEther.Script
         /// <summary>
         /// Invoked when <see cref="IScript"/> is loaded.
         /// </summary>
-        public void OnLoad(INonPlayerEntity owner)
+        public override void OnLoad(ICreatureEntity owner)
         {
-            entity = owner;
+            base.OnLoad(owner);
+            autoAttacks = [2605, 2607];
+
+            entitySummonFactory.Initialise(owner);
+        }
+
+        protected override void UpdateAI(double lastTick)
+        {
+            base.UpdateAI(lastTick);
+            eventManager.Update(lastTick);
+        }
+
+        private void OnScriptEvent(IScriptEvent scriptEvent, uint? _)
+        {
+            switch (scriptEvent)
+            {
+                case IEntityCastEvent castEvent:
+                    OnEntityCastEvent(castEvent);
+                    break;
+            }
+        }
+
+        private void OnEntityCastEvent(IEntityCastEvent @event)
+        {
+            switch ((Spell)@event.SpellId)
+            {
+                case Spell.ClawedFury:
+                case Spell.SlicingWind:
+                case Spell.PouncingSlice:
+                    eventManager.EnqueueEvent(TimeSpan.FromSeconds(20), @event);
+                    break;
+            }
         }
 
         /// <summary>
-        /// Invoked each world tick with the delta since the previous tick occurred.
+        /// Invoked when <see cref="IUnitEntity"/> enters combat.
         /// </summary>
-        public void Update(double lastTick)
+        public override void OnEnterCombat()
         {
-            eventManager.Update(lastTick);
+            IEntityCastEvent clawedFuryEvent = eventFactory.CreateEvent<IEntityCastEvent>();
+            clawedFuryEvent.Initialise(entity, Spell.ClawedFury, false);
+            eventManager.EnqueueEvent(TimeSpan.FromSeconds(8), clawedFuryEvent);
+        }
+
+        /// <summary>
+        /// Invoked when <see cref="IUnitEntity"/> leaves combat.
+        /// </summary>
+        public override void OnLeaveCombat()
+        {
+            eventManager.CancelEvents();
+            hasEnraged = false;
+        }
+
+        /// <summary>
+        /// Invoked when health is changed by source <see cref="IUnitEntity"/>.
+        /// </summary>
+        public override void OnHealthChange(IUnitEntity source, uint amount, DamageType? type)
+        {
+            base.OnHealthChange(source, amount, type);
+
+            // enrage at 55% health
+            if (((float)entity.Health) / ((float)entity.MaxHealth) < 0.55 && !hasEnraged)
+                Enrage();
+        }
+
+        private void Enrage()
+        {
+            eventManager.CancelEvents<IEntityCastEvent>();
+
+            IEntityCastEvent ravenousBurstEvent = eventFactory.CreateEvent<IEntityCastEvent>();
+            ravenousBurstEvent.Initialise(entity, 82855, false);
+            eventManager.EnqueueEvent(TimeSpan.FromSeconds(0), ravenousBurstEvent);
+
+            IEntityCastEvent turnedRavenousEvent = eventFactory.CreateEvent<IEntityCastEvent>();
+            turnedRavenousEvent.Initialise(entity, 81706, false);
+            eventManager.EnqueueEvent(TimeSpan.FromSeconds(7), turnedRavenousEvent);
+
+            IEntityCastEvent pounchingSliceEvent = eventFactory.CreateEvent<IEntityCastEvent>();
+            pounchingSliceEvent.Initialise(entity, 56390, true);
+            eventManager.EnqueueEvent(TimeSpan.FromSeconds(10), pounchingSliceEvent);
+
+            IEntityCastEvent slicingWindEvent = eventFactory.CreateEvent<IEntityCastEvent>();
+            slicingWindEvent.Initialise(entity, 56358, false);
+            eventManager.EnqueueEvent(TimeSpan.FromSeconds(20), slicingWindEvent);
+
+            hasEnraged = true;
         }
 
         /// <summary>
         /// Invoked when <see cref="IUnitEntity"/> is killed.
         /// </summary>
-        public void OnDeath()
+        public override void OnDeath()
         {
             IEntityTemplate template = entityTemplateManager.GetEntityTemplate(71821);
-
-            var @event = eventFactory.CreateEvent<IEntitySummonEvent<INonPlayerEntity>>();
-            @event.Initialise(entity.SummonFactory, template, entity.Position, entity.Rotation);
-            eventManager.EnqueueEvent(TimeSpan.FromSeconds(0), @event);
+            entitySummonFactory.Summon(template, entity.Position, entity.Rotation);
         }
     }
 }

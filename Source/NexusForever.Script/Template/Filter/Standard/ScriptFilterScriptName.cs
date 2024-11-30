@@ -26,7 +26,7 @@ namespace NexusForever.Script.Template.Filter.Standard
                 return search.ScriptNames.Contains(scriptName);
             }
 
-            return true;
+            return scriptName == null;
         }
     }
 }

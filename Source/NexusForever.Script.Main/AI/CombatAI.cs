@@ -1,18 +1,16 @@
 ﻿using NexusForever.Game.Abstract.Combat;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Entity.Movement.Command.Position;
-using NexusForever.Game.Abstract.Entity.Movement.Generator;
 using NexusForever.Game.Abstract.Spell;
+using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Entity.Movement.Spline;
 using NexusForever.Game.Static.Reputation;
 using NexusForever.Game.Static.Spell;
-using NexusForever.GameTable.Model;
 using NexusForever.GameTable;
+using NexusForever.GameTable.Model;
 using NexusForever.Script.Template;
-using NexusForever.Script.Template.Filter;
-using NexusForever.Shared.Game;
 using NexusForever.Shared;
-using NexusForever.Game.Static.Entity;
+using NexusForever.Shared.Game;
 
 namespace NexusForever.Script.Main.AI
 {
@@ -55,7 +53,7 @@ namespace NexusForever.Script.Main.AI
         /// <summary>
         /// Invoked each world tick with the delta since the previous tick occurred.
         /// </summary>
-        public void Update(double lastTick)
+        public virtual void Update(double lastTick)
         {
             if (!entity.IsAlive)
                 return;
@@ -66,6 +64,11 @@ namespace NexusForever.Script.Main.AI
             if (entity.IsCasting())
                 return;
 
+            UpdateAI(lastTick);
+        }
+
+        protected virtual void UpdateAI(double lastTick)
+        {
             autoAttackTimer.Update(lastTick);
             if (autoAttackTimer.HasElapsed)
             {
@@ -156,7 +159,7 @@ namespace NexusForever.Script.Main.AI
         /// <summary>
         /// Invoked when health is changed by source <see cref="IUnitEntity"/>.
         /// </summary>
-        public void OnHealthChange(IUnitEntity source, uint amount, DamageType? type)
+        public virtual void OnHealthChange(IUnitEntity source, uint amount, DamageType? type)
         {
             if (type is DamageType.Heal or null)
                 return;
@@ -172,19 +175,43 @@ namespace NexusForever.Script.Main.AI
             if (entity.InCombat)
                 return;
 
-            if (source is not IPlayer player)
+            if (source is not IUnitEntity unit)
                 return;
 
-            if (entity.GetDispositionTo(player.Faction1) != Disposition.Hostile)
+            if (entity.GetDispositionTo(unit.Faction1) != Disposition.Hostile)
                 return;
 
             var spellParameters = spellParametersFactory.Resolve();
             entity.CastSpell(41368, spellParameters);
 
             entity.MovementManager.Finalise();
-            entity.MovementManager.SetRotationFaceUnit(player.Guid);
+            entity.MovementManager.SetRotationFaceUnit(unit.Guid);
 
-            entity.ThreatManager.UpdateThreat(player, 1);
+            entity.ThreatManager.UpdateThreat(unit, 1);
+        }
+
+        /// <summary>
+        /// Invoked when <see cref="IUnitEntity"/> enters combat.
+        /// </summary>
+        public virtual void OnEnterCombat()
+        {
+            // deliberately empty
+        }
+
+        /// <summary>
+        /// Invoked when <see cref="IUnitEntity"/> leaves combat.
+        /// </summary>
+        public virtual void OnLeaveCombat()
+        {
+            // deliberately empty
+        }
+
+        /// <summary>
+        /// Invoked when <see cref="IUnitEntity"/> is killed.
+        /// </summary>
+        public virtual void OnDeath()
+        {
+            // deliberately empty
         }
 
         /// <summary>
@@ -231,6 +258,8 @@ namespace NexusForever.Script.Main.AI
             entity.SetTarget((IWorldEntity)null);
 
             entity.ModifyHealth(entity.MaxHealth, DamageType.Heal, null);
+
+            // TODO: cancel all pending spells
 
             float speed = entity.GetPropertyValue(Property.MoveSpeedMultiplier) * 10f;
             entity.MovementManager.LaunchSpline([entity.Position, entity.LeashPosition], SplineType.Linear, SplineMode.OneShot, speed);

@@ -57,9 +57,9 @@ namespace NexusForever.Script.Instance.Expedition.EvilFromTheEther
         public void OnLoad(IPublicEvent owner)
         {
             publicEvent = owner;
-            publicEvent.SetPhase(PublicEventPhase.TalkToCaptainWeir);
-
             mapInstance = publicEvent.Map as IMapInstance;
+
+            publicEvent.SetPhase(PublicEventPhase.TalkToCaptainWeir);
         }
 
         /// <summary>

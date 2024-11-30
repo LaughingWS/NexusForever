@@ -28,6 +28,20 @@ namespace NexusForever.Script.Template
         }
 
         /// <summary>
+        /// Invoked when <see cref="IUnitEntity"/> enters combat.
+        /// </summary>
+        void OnEnterCombat()
+        {
+        }
+
+        /// <summary>
+        /// Invoked when <see cref="IUnitEntity"/> leaves combat.
+        /// </summary>
+        void OnLeaveCombat()
+        {
+        }
+
+        /// <summary>
         /// Invoked when health is changed by source <see cref="IUnitEntity"/>.
         /// </summary>
         void OnHealthChange(IUnitEntity source, uint amount, DamageType? type)

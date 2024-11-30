@@ -440,7 +440,7 @@ namespace NexusForever.Game.Entity
         /// </summary>
         public void TakeDamage(IUnitEntity attacker, IDamageDescription damageDescription)
         {
-            if (!IsAlive || !attacker.IsAlive)
+            if (!IsAlive || !attacker.IsAlive || attacker == this)
                 return;
 
             // TODO: Calculate Threat properly
@@ -593,9 +593,16 @@ namespace NexusForever.Game.Entity
             if (ThreatManager.IsThreatened == InCombat)
                 return;
 
-            InCombat   = ThreatManager.IsThreatened;
-            Sheathed   = !inCombat;
-            StandState = inCombat ? StandState.Stand : StandState.State0;
+            bool previousCombatState = InCombat;
+            InCombat = ThreatManager.IsThreatened;
+
+            if (!previousCombatState && InCombat)
+                scriptCollection?.Invoke<IUnitScript>(s => s.OnEnterCombat());
+            else if (previousCombatState && !InCombat)
+                scriptCollection?.Invoke<IUnitScript>(s => s.OnLeaveCombat());
+
+            Sheathed   = !InCombat;
+            StandState = InCombat ? StandState.Stand : StandState.State0;
         }
     }
 }
