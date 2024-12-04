@@ -20,7 +20,6 @@ using NexusForever.Game.Group;
 using NexusForever.Game.Guild;
 using NexusForever.Game.Housing;
 using NexusForever.Game.Map;
-using NexusForever.Game.Prerequisite;
 using NexusForever.Game.Quest;
 using NexusForever.Game.RBAC;
 using NexusForever.Game.Reputation;
@@ -133,7 +132,6 @@ namespace NexusForever.WorldServer
 
             AssetManager.Instance.Initialise();
             ItemManager.Instance.Initialise();
-            PrerequisiteManager.Instance.Initialise();
             GlobalSpellManager.Instance.Initialise();
             GlobalQuestManager.Instance.Initialise();
 

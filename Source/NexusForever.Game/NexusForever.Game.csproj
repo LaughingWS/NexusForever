@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Prerequisite\PrerequisiteChecks.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Entity\Movement\Spline\Type\SplineTypeCatmullRom.cs~RF91b9243.TMP" />
   </ItemGroup>
 

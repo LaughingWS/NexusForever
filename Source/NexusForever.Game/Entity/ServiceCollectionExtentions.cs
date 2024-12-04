@@ -67,7 +67,7 @@ namespace NexusForever.Game.Entity
             sc.AddTransientFactory<IEntityTemplateStat, EntityTemplateStat>();
             sc.AddSingleton<IEntityTemplateManager, EntityTemplateManager>();
 
-            sc.AddSingleton<ICurrencyManager, CurrencyManager>();
+            sc.AddTransient<ICurrencyManager, CurrencyManager>();
         }
     }
 }
