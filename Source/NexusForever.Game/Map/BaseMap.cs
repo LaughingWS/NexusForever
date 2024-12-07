@@ -11,6 +11,7 @@ using NexusForever.Game.Abstract.Map.Search;
 using NexusForever.Game.Configuration.Model;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Map;
+using NexusForever.Game.Static.Spell;
 using NexusForever.GameTable.Model;
 using NexusForever.IO.Map;
 using NexusForever.Network.Message;
@@ -519,12 +520,58 @@ namespace NexusForever.Game.Map
         }
 
         /// <summary>
+        /// Invoked when a <see cref="IPlayer"/> on the map dies.
+        /// </summary>
+        public virtual void OnDeath(IPlayer player)
+        {
+            ResurrectionType type = GetResurrectionType();
+
+            if ((type & ResurrectionType.WakeHere | ResurrectionType.WakeHereServiceToken) != 0)
+            {
+                // TODO: Replace with DelayEvent (of 2 seconds) with map updates.
+                IGhostEntity ghost = entityFactory.CreateEntity<IGhostEntity>();
+                ghost.Initialise(player);
+                ghost.AddToMap(this, player.Position);
+            }
+            else
+                player.ResurrectionManager.ShowResurrection(type, null, null);
+        }
+
+        /// <summary>
         /// Return <see cref="ResurrectionType"/> applicable to this map.
         /// </summary>
         public virtual ResurrectionType GetResurrectionType()
         {
-            // TODO: add support for Holocrypts and instances
-            return ResurrectionType.None;
+            // TODO: add support for Holocrypts
+            return ResurrectionType.WakeHere | ResurrectionType.WakeHereServiceToken;
+        }
+
+        /// <summary>
+        /// Resurrect <see cref="IPlayer"/> with supplied <see cref="ResurrectionType"/>.
+        /// </summary>
+        public virtual void Resurrect(ResurrectionType type, IPlayer player)
+        {
+            switch (type)
+            {
+                /*case ResurrectionType.Holocrypt:
+                    OnResurrectHolocrypt(player);
+                    break;*/
+                default:
+                    OnResurrect(player);
+                    break;
+            }
+        }
+
+        private void OnResurrectHolocrypt(IPlayer player)
+        {
+            // TODO: add support for Holocrypts
+            throw new NotImplementedException();
+        }
+
+        private void OnResurrect(IPlayer player)
+        {
+            player.ModifyHealth(player.MaxHealth / 2, DamageType.Heal, null);
+            player.Shield = 0;
         }
 
         /// <summary>

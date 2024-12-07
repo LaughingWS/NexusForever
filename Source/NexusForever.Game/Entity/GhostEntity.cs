@@ -97,7 +97,9 @@ namespace NexusForever.Game.Entity
             }
 
             owner.SetControl(this);
-            owner.ResurrectionManager.ShowResurrection();
+
+            ResurrectionType type = map.GetResurrectionType();
+            owner.ResurrectionManager.ShowResurrection(type, null, null);
         }
     }
 }

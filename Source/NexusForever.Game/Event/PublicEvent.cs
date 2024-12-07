@@ -442,6 +442,9 @@ namespace NexusForever.Game.Event
             if (HasFinished)
                 return;
 
+            IsFinalised = template.InstantFinalise();
+            HasFinished = true;
+
             var teamStats = teams.Values
                 .Select(t => t.BuildTeamStats())
                 .ToList();
@@ -480,9 +483,6 @@ namespace NexusForever.Game.Event
                 winner = GetTeam(winnerTeam.Value);
 
             Map.OnPublicEventFinish(this, winner);
-
-            IsFinalised = template.InstantFinalise();
-            HasFinished = true;
 
             log.LogTrace($"Public event {Guid} has finished.");
         }

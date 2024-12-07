@@ -42,6 +42,7 @@ namespace NexusForever.Network.Message
         ClientEnteredWorld              = 0x00F2,
         ServerCharacterFlagsUpdated     = 0x00FE,
         ServerResurrectionState         = 0x0100,
+        ServerResurrectionForced        = 0x0101,
         Server0104                      = 0x0104, // Galactic Archive
         ServerGenericError              = 0x0106,
         ClientGuildHolomarkUpdate       = 0x010C,
@@ -422,6 +423,7 @@ namespace NexusForever.Network.Message
         Server089B                      = 0x089B, // mount related
         Server08B3                      = 0x08B3,
         ServerSetUnitPathType           = 0x08B8,
+        ServerEntityPvpFlags            = 0x08BD,
         ServerVehiclePassengerRemove    = 0x08C7,
         ServerUnitSetChair              = 0x08CF,
         ServerEntityVisualUpdate        = 0x0905,

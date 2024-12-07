@@ -32,9 +32,6 @@ namespace NexusForever.Script.Instance.Arena.TheSlaughterdome
                 case PublicEventPhase.Fight:
                     PhaseFight();
                     break;
-                case PublicEventPhase.Finished:
-                    PhaseFinished();
-                    break;
             }
         }
 
@@ -45,10 +42,6 @@ namespace NexusForever.Script.Instance.Arena.TheSlaughterdome
                 IDoorEntity door = publicEvent?.Map.GetEntity<IDoorEntity>(doorGuid);
                 door?.OpenDoor();
             }
-        }
-
-        private void PhaseFinished()
-        {
         }
 
         /// <summary>
@@ -88,11 +81,6 @@ namespace NexusForever.Script.Instance.Arena.TheSlaughterdome
         {
             // TODO: resurrection timer and auto release
             // TODO: spawn flag
-        }
-
-        public void OnResurrection(IPlayer player)
-        {
-            // TODO: move to spawn position
         }
     }
 }

@@ -68,6 +68,7 @@ namespace NexusForever.Game.Entity
             sc.AddSingleton<IEntityTemplateManager, EntityTemplateManager>();
 
             sc.AddTransient<ICurrencyManager, CurrencyManager>();
+            sc.AddTransient<IResurrectionManager, ResurrectionManager>();
         }
     }
 }

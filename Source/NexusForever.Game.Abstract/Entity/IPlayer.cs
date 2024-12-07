@@ -58,6 +58,8 @@ namespace NexusForever.Game.Abstract.Entity
         /// </summary>
         bool SignatureEnabled { get; }
 
+        PvPFlag PvPFlags { get; set; }
+
         IGameSession Session { get; }
 
         /// <summary>
@@ -149,7 +151,7 @@ namespace NexusForever.Game.Abstract.Entity
         /// <summary>
         /// Teleport <see cref="IPlayer"/> to supplied location.
         /// </summary>
-        void TeleportToLocal(Vector3 position, bool showLoadingScreen = true);
+        void TeleportToLocal(Vector3 position, bool showLoadingScreen = true, Action<Vector3> callback = null);
 
         /// <summary>
         /// Invoked when <see cref="IPlayer"/> has finished loading and is ready to enter world.

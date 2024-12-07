@@ -8,6 +8,7 @@ namespace NexusForever.Game.Abstract.Matching.Match
     public interface IMatchTeam
     {
         Static.Matching.MatchTeam Team { get; }
+        IMapEntrance MapEntrance { get; }
 
         /// <summary>
         /// The temporary secondary <see cref="Static.Reputation.Faction"/> for members during the match.

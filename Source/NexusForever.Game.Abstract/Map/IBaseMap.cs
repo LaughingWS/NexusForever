@@ -84,6 +84,16 @@ namespace NexusForever.Game.Abstract.Map
         ResurrectionType GetResurrectionType();
 
         /// <summary>
+        /// Invoked when a <see cref="IPlayer"/> on the map dies.
+        /// </summary>
+        void OnDeath(IPlayer player);
+
+        /// <summary>
+        /// Resurrect <see cref="IPlayer"/> with supplied <see cref="ResurrectionType"/>.
+        /// </summary>
+        void Resurrect(ResurrectionType type, IPlayer player);
+
+        /// <summary>
         /// Invoked when <see cref="IPublicEvent"/> finishes with the winning <see cref="IPublicEventTeam"/>.
         /// </summary>
         void OnPublicEventFinish(IPublicEvent publicEvent, IPublicEventTeam publicEventTeam);

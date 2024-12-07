@@ -58,7 +58,7 @@ namespace NexusForever.Game.Map.Instance
         {
             if (Match != null)
             {
-                IMapPosition mapPosition = Match.GetReturnPosition(player);
+                IMapPosition mapPosition = Match.GetReturnPosition(player.CharacterId);
                 if (mapPosition != null)
                     return mapPosition;
             }

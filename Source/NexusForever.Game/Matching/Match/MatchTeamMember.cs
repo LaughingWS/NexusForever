@@ -4,6 +4,7 @@ using NexusForever.Game.Abstract.Map;
 using NexusForever.Game.Abstract.Matching;
 using NexusForever.Game.Abstract.Matching.Match;
 using NexusForever.Game.Map;
+using NexusForever.Game.Static.Entity;
 using NexusForever.Network.Message;
 using NexusForever.Network.World.Message.Model;
 
@@ -114,7 +115,7 @@ namespace NexusForever.Game.Matching.Match
                 return;
 
             player.Rotation = ReturnRotation;
-            player.TeleportTo(ReturnPosition);
+            player.TeleportTo(ReturnPosition, TeleportReason.EndMatch);
         }
 
         /// <summary>

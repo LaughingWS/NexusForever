@@ -16,7 +16,7 @@ namespace NexusForever.Game.Spell.Effect.Handler
             if (target is not IPlayer player)
                 return;
 
-            player.ResurrectionManager.ResurrectRequest(spell.Caster.Guid);
+            player.ResurrectionManager.OnResurrectRequest(spell.Caster.Guid);
         }
     }
 }

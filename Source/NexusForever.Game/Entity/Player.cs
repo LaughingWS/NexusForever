@@ -188,6 +188,23 @@ namespace NexusForever.Game.Entity
         /// </summary>
         public bool SignatureEnabled => Account.RbacManager.HasPermission(Permission.Signature);
 
+        public PvPFlag PvPFlags
+        {
+            get => pvpFlags;
+            set
+            {
+                pvpFlags = value;
+
+                EnqueueToVisible(new ServerEntityPvpFlags
+                {
+                    UnitId   = Guid,
+                    PvpFlags = pvpFlags
+                });
+            }
+        }
+
+        private PvPFlag pvpFlags;
+
         public IGameSession Session { get; private set; }
 
         /// <summary>
@@ -243,7 +260,8 @@ namespace NexusForever.Game.Entity
             IEntityFactory entityFactory,
             IMatchingManager matchingManager,
             IMatchManager matchManager,
-            ICurrencyManager currencyManager)
+            ICurrencyManager currencyManager,
+            IResurrectionManager resurrectionManager)
             : base(movementManager, entitySummonFactory)
         {
             this.entityFactory   = entityFactory;
@@ -251,7 +269,8 @@ namespace NexusForever.Game.Entity
             this.matchManager    = matchManager;
 
             // managers
-            CurrencyManager = currencyManager;
+            CurrencyManager     = currencyManager;
+            ResurrectionManager = resurrectionManager;
         }
 
         #endregion
@@ -326,7 +345,7 @@ namespace NexusForever.Game.Entity
             LogoutManager.OnTimerFinished += Logout;
 
             AppearanceManager       = new AppearanceManager(this, model);
-            ResurrectionManager     = new ResurrectionManager(this);
+            ResurrectionManager.Initalise(this);
 
             // do dependant stat balance after all stats and properties have been set
             SetDependantStatBalance(true);
@@ -359,6 +378,7 @@ namespace NexusForever.Game.Entity
             SpellManager.Update(lastTick);
             CostumeManager.Update(lastTick);
             QuestManager.Update(lastTick);
+            ResurrectionManager.Update(lastTick);
 
             saveTimer.Update(lastTick);
             if (saveTimer.HasElapsed)
@@ -463,7 +483,7 @@ namespace NexusForever.Game.Entity
                     model.WorldId = (ushort)Map.Entry.Id;
                     entity.Property(p => p.WorldId).IsModified = true;
 
-                    model.WorldZoneId = (ushort)Zone.Id;
+                    model.WorldZoneId = (ushort)(Zone?.Id ?? 0);
                     entity.Property(p => p.WorldZoneId).IsModified = true;
                 }
 
@@ -552,7 +572,7 @@ namespace NexusForever.Game.Entity
                     .ToList(),
                 GuildName = GuildManager.GuildAffiliation?.Name,
                 GuildType = GuildManager.GuildAffiliation?.Type ?? GuildType.None,
-                PvPFlag   = PvPFlag.Disabled,
+                PvPFlag   = PvPFlags,
 
                 // We use Group 1 as the "dominant group"
                 GroupId   = GroupMembership1 == null ? 0 : GroupMembership1.Group.Id
@@ -578,7 +598,12 @@ namespace NexusForever.Game.Entity
             SendPacketsAfterAddToMap();
 
             if (!IsAlive)
-                OnDeath(null);
+            {
+                if (pendingTeleport.Resurrect)
+                    Map.Resurrect(ResurrectionType.WakeHere, this);
+                else
+                    OnDeath(null);
+            }
 
             if (PreviousMap == null)
                 OnLogin();
@@ -944,7 +969,8 @@ namespace NexusForever.Game.Entity
             {
                 Reason      = reason,
                 MapPosition = mapPosition,
-                VanityPetId = vanityPetId
+                VanityPetId = vanityPetId,
+                Resurrect   = reason == TeleportReason.EndMatch && !IsAlive
             };
 
             IMapPosition source = null;
@@ -983,7 +1009,7 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Teleport <see cref="IPlayer"/> to supplied location.
         /// </summary>
-        public void TeleportToLocal(Vector3 position, bool showLoadingScreen = true)
+        public void TeleportToLocal(Vector3 position, bool showLoadingScreen = true, Action<Vector3> callback = null)
         {
             if (!CanTeleport())
             {
@@ -996,7 +1022,16 @@ namespace NexusForever.Game.Entity
             if (showLoadingScreen)
                 Session.EnqueueMessageEncrypted(new ServerTeleportLocal());
 
-            RelocateOnMap(position, OnTeleportToLocal);
+            if (callback != null)
+            {
+                RelocateOnMap(position, (vector) =>
+                {
+                    OnTeleportToLocal(vector);
+                    callback.Invoke(vector);
+                });
+            }
+            else
+                RelocateOnMap(position, OnTeleportToLocal);
 
             log.Trace($"Teleporting {Name}({CharacterId}) to location {position.X}, {position.Y}, {position.Z}.");
         }
@@ -1388,9 +1423,11 @@ namespace NexusForever.Game.Entity
         /// </summary>
         public override bool CanAttack(IUnitEntity target)
         {
-            // TODO: Disable when PvP is available.
-            if (target is IPlayer)
-                return false;
+            if (target is IPlayer player)
+            {
+                if (player.PvPFlags == PvPFlag.Disabled)
+                    return false;
+            }
 
             return base.CanAttack(target);
         }
@@ -1436,12 +1473,7 @@ namespace NexusForever.Game.Entity
             UpdateRangeChecks();
 
             Map.PublicEventManager.UpdateStat(this, PublicEventStat.Deaths, 1);
-
-            // TODO: Replace with DelayEvent (of 2 seconds) with map updates.
-
-            IGhostEntity ghost = entityFactory.CreateEntity<IGhostEntity>();
-            ghost.Initialise(this);
-            ghost.AddToMap(Map, Position);
+            Map.OnDeath(this);
         }
 
         protected override void RewardKiller(IPlayer player)

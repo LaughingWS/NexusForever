@@ -12,6 +12,7 @@ namespace NexusForever.Game.Matching.Match
     public class MatchTeam : IMatchTeam
     {
         public Static.Matching.MatchTeam Team { get; private set; }
+        public IMapEntrance MapEntrance { get; private set; }
 
         /// <summary>
         /// The temporary secondary <see cref="Static.Reputation.Faction"/> for members during the match.
@@ -24,7 +25,6 @@ namespace NexusForever.Game.Matching.Match
         private IMatch match;
 
         private readonly Dictionary<ulong, IMatchTeamMember> members = [];
-        private IMapEntrance mapEntrance;
 
         #region Dependency Injection
 
@@ -46,14 +46,14 @@ namespace NexusForever.Game.Matching.Match
         /// </summary>
         public void Initialise(IMatch match, Static.Matching.MatchTeam team)
         {
-            if (mapEntrance != null)
+            if (MapEntrance != null)
                 throw new InvalidOperationException();
 
-            Team    = team;
-            Faction = team == Static.Matching.MatchTeam.Red ? Faction.MatchingTeam1 : Faction.MatchingTeam2;
+            Team        = team;
+            MapEntrance = matchingDataManager.GetMapEntrance(match.MatchingMap.GameMapEntry.WorldId, (byte)team);
+            Faction     = team == Static.Matching.MatchTeam.Red ? Faction.MatchingTeam1 : Faction.MatchingTeam2;
 
             this.match  = match;
-            mapEntrance = matchingDataManager.GetMapEntrance(match.MatchingMap.GameMapEntry.WorldId, (byte)team);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace NexusForever.Game.Matching.Match
 
             IMatchTeamMember matchTeamMember = matchTeamMemberFactory.Resolve();
             matchTeamMember.Initialise(characterId);
-            matchTeamMember.TeleportToMatch(mapEntrance);
+            matchTeamMember.TeleportToMatch(MapEntrance);
 
             members.Add(characterId, matchTeamMember);
 
@@ -141,7 +141,7 @@ namespace NexusForever.Game.Matching.Match
         public void MatchTeleport(ulong characterId)
         {
             IMatchTeamMember matchTeamMember = GetMember(characterId);
-            matchTeamMember?.TeleportToMatch(mapEntrance);
+            matchTeamMember?.TeleportToMatch(MapEntrance);
         }
 
         /// <summary>

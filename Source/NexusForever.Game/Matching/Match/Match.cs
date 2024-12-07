@@ -203,7 +203,7 @@ namespace NexusForever.Game.Matching.Match
         /// <summary>
         /// Invoked when <see cref="IPlayer"/> exits the match.
         /// </summary>
-        public void MatchExit(IPlayer player, bool teleport)
+        public virtual void MatchExit(IPlayer player, bool teleport)
         {
             IMatchTeam team = GetTeam(player.CharacterId);
             if (team == null)
@@ -228,7 +228,7 @@ namespace NexusForever.Game.Matching.Match
         /// <summary>
         /// Remove character from match.
         /// </summary>
-        public void MatchLeave(ulong characterId)
+        public virtual void MatchLeave(ulong characterId)
         {
             IMatchTeam team = GetTeam(characterId);
             if (team == null)
@@ -285,15 +285,27 @@ namespace NexusForever.Game.Matching.Match
         }
 
         /// <summary>
-        /// Get return <see cref="IMapPosition"/> for <see cref="IPlayer"/>.
+        /// Get return <see cref="IMapPosition"/> for supplied character.
         /// </summary>
         /// <remarks>
         /// Return position is the position of the player before entering the match.
         /// </remarks>
-        public IMapPosition GetReturnPosition(IPlayer player)
+        public IMapPosition GetReturnPosition(ulong characterId)
         {
-            IMatchTeam team = GetTeam(player.CharacterId);
-            return team.GetReturnPosition(player.CharacterId);
+            IMatchTeam team = GetTeam(characterId);
+            return team.GetReturnPosition(characterId);
+        }
+
+        /// <summary>
+        /// Get <see cref="IMapEntrance"/> for supplied character.
+        /// </summary>
+        /// <remarks>
+        /// Map entrance position is the position the players team will be teleported to when the match starts.
+        /// </remarks>
+        public IMapEntrance GetMapEntrance(ulong characterId)
+        {
+            IMatchTeam team = GetTeam(characterId);
+            return team.MapEntrance;
         }
 
         protected void Broadcast(IWritable message)
