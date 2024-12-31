@@ -19,7 +19,7 @@
         InfusionInterdiction                   = 5336,
         StealSampleOfLiquidSoulfrost           = 5337,
         KillEnemiesWithinColdbloodCitadel      = 5342,
-        DrfeatHailStoneGatecrasher             = 5313,
+        DefeatHailStoneGatecrasher             = 5313,
         DefeatTheIcebloodCoven                 = 5314,
         DefeatTheRisenHarizog                  = 5315
     }
