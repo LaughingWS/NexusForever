@@ -161,7 +161,7 @@ namespace NexusForever.WorldServer.Game.Entity
                 }
 
                 QuestManager.ObjectiveUpdate(QuestObjectiveType.EnterZone, Zone.Id, 1);
-                PathMissionManager.SetCurrentZoneEpisode();
+                //PathMissionManager.SetCurrentZoneEpisode();
                 ScriptManager.Instance.GetScript<MapScript>(Map.Entry.Id)?.OnEnterZone(this, Zone.Id);
             }
 
