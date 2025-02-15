@@ -59,28 +59,50 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             uint[] Card1 = [160, 162, 582, 583, 585, 2432, 2433, 2436, 2437, 2438, 2439, 2440, 2441, 2442, 2443, 2453, 2360, 2466, 2467, 2468, 2469, 2475, 2476];
             uint[] Card2 = [160, 162, 582, 583, 585, 2432, 2433, 2436, 2437, 2438, 2439, 2440, 2441, 2442, 2443, 2453, 2360, 2466, 2467, 2468, 2469, 2475, 2476];
             uint[] Card3 = [160, 162, 582, 583, 585, 2432, 2433, 2436, 2437, 2438, 2439, 2440, 2441, 2442, 2443, 2453, 2360, 2466, 2467, 2468, 2469, 2475, 2476];
+            uint[] Card4 = [2433, 2437, 2438, 2439, 2440, 2441, 2442];
 
             int Index1 = rnd.Next(Card1.Length);
             int Index2 = rnd.Next(Card2.Length);
             int Index3 = rnd.Next(Card3.Length);
+            int Index4 = rnd.Next(Card4.Length);
 
             ulong currentFortuneCharge = session.AccountCurrencyManager.GetAmount(Game.Account.Static.AccountCurrencyType.FortuneCharge);
             if (currentFortuneCharge < 14)
-                session.AccountCurrencyManager.CurrencyAddAmount(Game.Account.Static.AccountCurrencyType.FortuneCharge, 1);
-            else
-                session.AccountCurrencyManager.CurrencySubtractAmount(Game.Account.Static.AccountCurrencyType.FortuneCharge, currentFortuneCharge);
-
-            session.EnqueueMessageEncrypted(new ServerGachaRollResult
             {
-                Unknown0 = 3,
-                WinType = (byte)(currentFortuneCharge < 14 ? 1 : 2),
-                AccountItemsWon = new uint[3]
+                session.AccountCurrencyManager.CurrencyAddAmount(Game.Account.Static.AccountCurrencyType.FortuneCharge, 1);
+
+                session.AccountCurrencyManager.CurrencySubtractAmount(Game.Account.Static.AccountCurrencyType.FortuneCoin, 1);
+
+                session.EnqueueMessageEncrypted(new ServerGachaRollResult
                 {
+                    Unknown0 = 3,
+                    WinType = (byte)(currentFortuneCharge < 14 ? 1 : 2),
+                    AccountItemsWon = new uint[3]
+                    {
                     Card1[Index1],
                     Card2[Index2],
                     Card3[Index3]
-                }
-            });
+                    }
+                });
+            }
+            else
+            {
+                session.AccountCurrencyManager.CurrencySubtractAmount(Game.Account.Static.AccountCurrencyType.FortuneCharge, currentFortuneCharge);
+
+                session.AccountCurrencyManager.CurrencySubtractAmount(Game.Account.Static.AccountCurrencyType.FortuneCoin, 1);
+
+                session.EnqueueMessageEncrypted(new ServerGachaRollResult
+                {
+                    Unknown0 = 3,
+                    AccountItemsWon = new uint[3]
+                    {
+                        Card1[Index1],
+                        Card4[Index4],
+                        Card3[Index3]
+                    }
+                });
+            }
+
         }
 
         [MessageHandler(GameMessageOpcode.ClientGachaClaimItem)]
