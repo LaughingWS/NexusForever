@@ -1,20 +1,25 @@
 ﻿using NexusForever.Game.Abstract.Cinematic;
-using NexusForever.Game.Abstract.Cinematic.Cinematics;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Script.Template.Filter;
+using NexusForever.Game.Cinematic.Cinematics;
+using NexusForever.Game.Abstract.Cinematic.Cinematics;
 
-namespace NexusForever.Script.Instance.Expedition.FragmentZero
+namespace NexusForever.Script.Instance.EventInstances.ShadesEve
 {
-    [ScriptFilterOwnerId(3180)]
-    public class FragmentZeroMapScript : EventBaseContentMapScript
+    [ScriptFilterOwnerId(3044)]
+    public class ShadesEveMapScript : EventBaseContentMapScript
     {
-        public override uint PublicEventId => 680u;
+        public override uint PublicEventId => 597u;
+        //627 Option 1
+        //630 Option 2
+        //632 Option 1
+        //633 Option 2
 
         #region Dependency Injection
 
         private readonly ICinematicFactory cinematicFactory;
 
-        public FragmentZeroMapScript(
+        public ShadesEveMapScript(
             ICinematicFactory cinematicFactory)
         {
             this.cinematicFactory = cinematicFactory;
@@ -32,7 +37,7 @@ namespace NexusForever.Script.Instance.Expedition.FragmentZero
             if (entity is not IPlayer player)
                 return;
 
-            player.CinematicManager.QueueCinematic(cinematicFactory.CreateCinematic<IFragmentZeroOnCreate>());
+            player.CinematicManager.QueueCinematic(cinematicFactory.CreateCinematic<IShadesEveOnCreate>());
         }
     }
 }

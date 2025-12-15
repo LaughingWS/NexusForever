@@ -1,4 +1,5 @@
-﻿using NexusForever.Script.Template.Filter;
+﻿using NexusForever.Game.Abstract.Entity;
+using NexusForever.Script.Template.Filter;
 
 namespace NexusForever.Script.Instance.Expedition.OutpostM13
 {
@@ -6,5 +7,6 @@ namespace NexusForever.Script.Instance.Expedition.OutpostM13
     public class OutpostM13MapScript : EventBaseContentMapScript
     {
         public override uint PublicEventId => 108u;
+
     }
 }

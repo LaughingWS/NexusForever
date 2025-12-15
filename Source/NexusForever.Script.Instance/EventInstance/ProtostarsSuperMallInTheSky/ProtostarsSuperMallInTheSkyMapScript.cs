@@ -3,18 +3,18 @@ using NexusForever.Game.Abstract.Cinematic.Cinematics;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Script.Template.Filter;
 
-namespace NexusForever.Script.Instance.Expedition.FragmentZero
+namespace NexusForever.Script.Instance.EventInstances.ProtostarsSuperMallInTheSky
 {
-    [ScriptFilterOwnerId(3180)]
-    public class FragmentZeroMapScript : EventBaseContentMapScript
+    [ScriptFilterOwnerId(3094)]
+    public class ProtostarsSuperMallInTheSkyMapScript : EventBaseContentMapScript
     {
-        public override uint PublicEventId => 680u;
+        public override uint PublicEventId => 679u;
 
         #region Dependency Injection
 
         private readonly ICinematicFactory cinematicFactory;
 
-        public FragmentZeroMapScript(
+        public ProtostarsSuperMallInTheSkyMapScript(
             ICinematicFactory cinematicFactory)
         {
             this.cinematicFactory = cinematicFactory;
@@ -32,7 +32,7 @@ namespace NexusForever.Script.Instance.Expedition.FragmentZero
             if (entity is not IPlayer player)
                 return;
 
-            player.CinematicManager.QueueCinematic(cinematicFactory.CreateCinematic<IFragmentZeroOnCreate>());
+            player.CinematicManager.QueueCinematic(cinematicFactory.CreateCinematic< IProtostarSuperMallInTheSkyOnCreate > ());
         }
     }
 }
