@@ -823,6 +823,9 @@ namespace NexusForever.Game.Entity
             base.OnRemoveFromMap();
         }
 
+        /// <summary>
+        /// Add tracked <see cref="IGridEntity"/> that is in vision range.
+        /// </summary>
         public override void AddVisible(IGridEntity entity)
         {
             base.AddVisible(entity);
@@ -856,6 +859,9 @@ namespace NexusForever.Game.Entity
             }
         }
 
+        /// <summary>
+        /// Remove tracked <see cref="IGridEntity"/> that is no longer in vision range.
+        /// </summary>
         public override void RemoveVisible(IGridEntity entity)
         {
             base.RemoveVisible(entity);

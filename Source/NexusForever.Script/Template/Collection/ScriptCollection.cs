@@ -83,8 +83,9 @@ namespace NexusForever.Script.Template.Collection
         {
             foreach (IScriptInstanceInfo instanceInfo in scripts.Values)
             {
-                if (instanceInfo.ScriptInfo.Type.IsAssignableTo(typeof(T)))
-                {
+                if (!instanceInfo.ScriptInfo.Type.IsAssignableTo(typeof(T)))
+                    continue;
+
                     try
                     {
                         p.Invoke((T)instanceInfo.Script);
@@ -93,8 +94,33 @@ namespace NexusForever.Script.Template.Collection
                     {
                         log.LogError(ex, "An exception occured during invoke for script {Name} in collection {Id}!", instanceInfo.ScriptInfo.Name, Id);
                     }
+            }
+        }
+
+        /// <summary>
+        /// Invoke function on any scripts in <see cref="IScriptCollection"/> that are assignable to supplied <see cref="IScript"/> type.
+        /// </summary>
+        /// <remarks>
+        /// If multiple scripts are found that are assignable to the supplied <see cref="IScript"/> type, the return value of the first script processed will be returned.
+        /// </remarks>
+        public TOut? Invoke<TOut, TIn>(Func<TIn, TOut> func) where TOut : struct
+        {
+            foreach (IScriptInstanceInfo instanceInfo in scripts.Values)
+            {
+                if (!instanceInfo.ScriptInfo.Type.IsAssignableTo(typeof(TIn)))
+                    continue;
+
+                try
+                {
+                    return func.Invoke((TIn)instanceInfo.Script);
+                }
+                catch (Exception ex)
+                {
+                    log.LogError(ex, "An exception occured during invoke for script {Name} in collection {Id}!", instanceInfo.ScriptInfo.Name, Id);
                 }
             }
+
+            return null;
         }
 
         public IEnumerator<IScriptInstanceInfo> GetEnumerator()

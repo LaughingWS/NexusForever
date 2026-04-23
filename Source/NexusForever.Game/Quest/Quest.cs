@@ -1,12 +1,17 @@
 ﻿using System.Collections;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Logging;
 using NexusForever.Database.Character;
 using NexusForever.Database.Character.Model;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Quest;
+using NexusForever.Game.Static.Achievement;
+using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Quest;
+using NexusForever.GameTable.Model;
 using NexusForever.Network.World.Message.Model;
+using NexusForever.Network.World.Message.Static;
 using NexusForever.Script;
 using NexusForever.Script.Template;
 using NexusForever.Script.Template.Collection;
@@ -102,6 +107,22 @@ namespace NexusForever.Game.Quest
         private UpdateTimer questTimer;
 
         private IScriptCollection scriptCollection;
+
+
+        #region Dependency Injection
+
+        private readonly ILogger<Quest> log;
+        private readonly IScriptManager scriptManager;
+
+        public Quest(
+            ILogger<Quest> log,
+            IScriptManager scriptManager)
+        {
+            this.log           = log;
+            this.scriptManager = scriptManager;
+        }
+
+        #endregion
 
         /// <summary>
         /// Create a new <see cref="IQuest"/> from an existing database model.
